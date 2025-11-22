@@ -1,4 +1,4 @@
-install:
+Установка:
 Перейти в хроме chrome://extensions/ и нажать "установить распакованное расширение"
 <img width="1378" height="360" alt="image" src="https://github.com/user-attachments/assets/f3ad9874-c775-4055-8255-ce9faa530e44" />
 Включить и обновить страниу, бот будет улучшать самое выгодное улучшение в пересчете на 1 GEM.
