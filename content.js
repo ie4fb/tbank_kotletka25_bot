@@ -8,7 +8,7 @@ const sequenceRepeater = (bestUnavailableId) => {
     return;
   }
   const currentPhase = 1;
-  //random sequence restart delay 6-12 sec
+  //random sequence restart delay 
   let randomTime = Math.floor(Math.random() * (50000 - 5500 + 1)) + 5500;
   //getting min upgrade limits per hour
   fetch("https://kotletka.tbank.ru/api/queries/v1/users/businesses", {
