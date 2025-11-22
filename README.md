@@ -1,0 +1,9 @@
+install:
+Нажать "установить распакованное расширение"
+<img width="1378" height="360" alt="image" src="https://github.com/user-attachments/assets/f3ad9874-c775-4055-8255-ce9faa530e44" />
+Включить и обновить страниу, бот будет улучшать самое выгодное улучшение в пересчете на 1 GEM.
+
+<img width="575" height="188" alt="image" src="https://github.com/user-attachments/assets/79f22af3-4fa5-451f-ab86-a0be360083ac" />
+
+Если улучшение заблокировано по времени, он будет качать второе самое лучше улучшение, которое хуже первого
+
