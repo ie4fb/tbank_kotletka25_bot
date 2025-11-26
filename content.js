@@ -1,3 +1,81 @@
+
+window.currentPhase = 2;
+window.botActive = true;
+const botControlPanel = document.createElement('div');
+botControlPanel.innerHTML = `
+  <div style="
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+    border: 1px solid #333;
+  ">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+      <span>Бот:</span>
+      <button id="botToggle" style="
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        background: #f44336;
+        color: white;
+      ">ВЫКЛ</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span>Фаза:</span>
+      <select id="phaseSelect" style="
+        padding: 4px 8px;
+        border: none;
+        border-radius: 4px;
+        background: white;
+        color: black;
+      ">
+        <option value="1">1 - Fire</option>
+        <option value="2" selected>2 - Water</option>
+        <option value="3">3 - Earth</option>
+        <option value="4">4 - Air</option>
+      </select>
+    </div>
+  </div>
+`;
+
+document.body.appendChild(botControlPanel);
+
+if (typeof window.botActive === 'undefined') {
+  window.botActive = false;
+}
+
+const toggleBtn = document.getElementById('botToggle');
+const phaseSelect = document.getElementById('phaseSelect');
+
+function updateButtonText() {
+  toggleBtn.textContent = window.botActive ? 'ВКЛ' : 'ВЫКЛ';
+  toggleBtn.style.background = window.botActive ? '#4CAF50' : '#f44336';
+}
+
+toggleBtn.addEventListener('click', function() {
+  window.botActive = !window.botActive;
+  updateButtonText();
+  console.log('Бот:', window.botActive ? 'включен' : 'выключен');
+});
+
+phaseSelect.addEventListener('change', function() {
+  window.currentPhase = parseInt(this.value);
+  console.log('Установлена фаза:', window.currentPhase, this.options[this.selectedIndex].text);
+});
+
+window.currentPhase = parseInt(phaseSelect.value);
+
+updateButtonText();
+
 const sequenceRepeater = (bestUnavailableId) => {
   const authHeaders = {
     accept: "application/json, text/plain, */*",
@@ -7,7 +85,6 @@ const sequenceRepeater = (bestUnavailableId) => {
     console.log("bot stopped");
     return;
   }
-  const currentPhase = 1;
   //random sequence restart delay 6-12 sec
   let randomTime = Math.floor(Math.random() * (50000 - 5500 + 1)) + 5500;
   //getting min upgrade limits per hour
@@ -18,7 +95,7 @@ const sequenceRepeater = (bestUnavailableId) => {
     .then((res) => res.json())
     .then((res) => {
       const improvementData = res.payload.businesses.filter(
-        (item) => item.availableFromPhase <= currentPhase,
+        (item) => item.availableFromPhase <= window.currentPhase,
       );
       setTimeout(
         () => {
