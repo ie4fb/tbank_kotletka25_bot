@@ -1,17 +1,14 @@
 {
-    "manifest_version": 3,
-    "name": "My Automation Script",
-    "version": "1.0",
-    "description": "Automates tasks on specific website",
-    "permissions": [
-        "activeTab",
-        "storage"
-    ],
-    "content_scripts": [
-        {
-            "matches": ["https://kotletka.tbank.ru/*"],
-            "js": ["content.js"],
-            "run_at": "document_end"
-        }
-    ]
+  "manifest_version": 3,
+  "name": "Котлетка 2025 бот",
+  "version": "1.0",
+  "description": "Automates tasks on specific website",
+  "permissions": ["activeTab", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://kotletka.tbank.ru/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
 }
