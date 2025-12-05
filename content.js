@@ -1,11 +1,31 @@
+const getCurrentPhase = () => parseInt(window.localStorage.getItem('currentPhase'));
+const getBotMode = () => window.localStorage.getItem('botMode')
 
-window.currentPhase = 2;
-window.botActive = true;
+const checkSettings = () => {
+  if (window.localStorage.getItem('currentPhase') === null) {
+    window.localStorage.setItem('currentPhase', 2)
+  }
+
+  if (window.localStorage.getItem('botMode') === null) {
+    window.localStorage.setItem('botMode', 'gems')
+  }
+
+  if (window.localStorage.getItem('botActive') === null) {
+    window.localStorage.setItem('botActive', true)
+  }
+}
+
+checkSettings();
+
+window.currentPhase = window.localStorage.getItem('currentPhase');
+window.botActive = window.localStorage.getItem('botActive');
+window.botMode = window.localStorage.getItem('botMode');
+
 const botControlPanel = document.createElement('div');
 botControlPanel.innerHTML = `
   <div style="
     position: fixed;
-    top: 10px;
+    top: 120px;
     left: 10px;
     background: rgba(0,0,0,0.8);
     color: white;
@@ -29,7 +49,7 @@ botControlPanel.innerHTML = `
         color: white;
       ">ВЫКЛ</button>
     </div>
-    <div style="display: flex; align-items: center; gap: 10px;">
+    <div style="display: flex; align-items: start; gap: 10px; flex-direction: column;">
       <span>Фаза:</span>
       <select id="phaseSelect" style="
         padding: 4px 8px;
@@ -38,10 +58,21 @@ botControlPanel.innerHTML = `
         background: white;
         color: black;
       ">
-        <option value="1">1 - Fire</option>
-        <option value="2" selected>2 - Water</option>
-        <option value="3">3 - Earth</option>
-        <option value="4">4 - Air</option>
+        <option value="1" ${(getCurrentPhase() === 1) && 'selected'}>1 - Fire</option>
+        <option value="2" ${(getCurrentPhase() === 2) && 'selected'}>2 - Water</option>
+        <option value="3" ${(getCurrentPhase() === 3) && 'selected'}>3 - Earth</option>
+        <option value="4" ${(getCurrentPhase() === 4) && 'selected'}>4 - Air</option>
+      </select>
+       <span>Режим:</span>
+      <select id="modeSelect" style="
+        padding: 4px 8px;
+        border: none;
+        border-radius: 4px;
+        background: white;
+        color: black;
+      ">
+        <option value="gems" ${(getBotMode() === 'gems') && 'selected'}>Gems</option>
+        <option value="stars" ${(getBotMode() === 'stars') && 'selected'}>Stars</option>
       </select>
     </div>
   </div>
@@ -55,6 +86,7 @@ if (typeof window.botActive === 'undefined') {
 
 const toggleBtn = document.getElementById('botToggle');
 const phaseSelect = document.getElementById('phaseSelect');
+const modeSelect = document.getElementById('modeSelect')
 
 function updateButtonText() {
   toggleBtn.textContent = window.botActive ? 'ВКЛ' : 'ВЫКЛ';
@@ -63,16 +95,25 @@ function updateButtonText() {
 
 toggleBtn.addEventListener('click', function() {
   window.botActive = !window.botActive;
+  window.localStorage.setItem('botActive', window.botActive)
   updateButtonText();
   console.log('Бот:', window.botActive ? 'включен' : 'выключен');
 });
 
 phaseSelect.addEventListener('change', function() {
   window.currentPhase = parseInt(this.value);
+  window.localStorage.setItem('currentPhase', window.currentPhase)
   console.log('Установлена фаза:', window.currentPhase, this.options[this.selectedIndex].text);
 });
 
-window.currentPhase = parseInt(phaseSelect.value);
+modeSelect.addEventListener('change', function() {
+  window.botMode = this.value;
+  window.localStorage.setItem('botMode', window.botMode)
+  console.log('Установлен режим:', window.botMode);
+});
+
+window.currentPhase = parseInt(window.localStorage.getItem('currentPhase'));
+window.botMode = window.localStorage.getItem('botMode', window.botMode)
 
 updateButtonText();
 
@@ -118,21 +159,40 @@ const sequenceRepeater = (bestUnavailableId) => {
               let bestIncrementPrice = 10000000;
               let bestUpgradeCost = 9999999;
               //getting best value per diamond upgrade
-              improvementData.forEach((el) => {
-                if (el.id === bestUnavailableId) {
-                  return;
-                } else {
-                  const elPricePerIncrement =
-                    el.nextLevelCost / el.nextLevelIncomePerHourDiff;
-                    console.log(el.id, '1 diamond increment cost:', elPricePerIncrement)
-                  if (elPricePerIncrement < bestIncrementPrice) {
-                    bestIncrementPrice = elPricePerIncrement;
-                    bestCandidateId = el.id;
-                    bestUpgradeCost = el.nextLevelCost;
-                    bestCandidateNextLevel = el.currentLevel + 1;
+              console.log('calculating price for', window.botMode)
+              if(window.botMode === 'gems') {
+                improvementData.forEach((el) => {
+                  if (el.id === bestUnavailableId) {
+                    return;
+                  } else {
+                    const elPricePerIncrement =
+                      el.nextLevelCost / el.nextLevelIncomePerHourDiff;
+                      console.log(el.id, '1 diamond increment cost:', elPricePerIncrement)
+                    if (elPricePerIncrement < bestIncrementPrice) {
+                      bestIncrementPrice = elPricePerIncrement;
+                      bestCandidateId = el.id;
+                      bestUpgradeCost = el.nextLevelCost;
+                      bestCandidateNextLevel = el.currentLevel + 1;
+                    }
                   }
-                }
-              });
+                });
+              } else {
+                improvementData.forEach((el) => {
+                  if (el.id === bestUnavailableId) {
+                    return;
+                  } else {
+                    const elPricePerIncrement =
+                      el.nextLevelCost / el.nextLevelScoreDiff;
+                      console.log(el.id, '1 star increment cost:', elPricePerIncrement)
+                    if (elPricePerIncrement < bestIncrementPrice) {
+                      bestIncrementPrice = elPricePerIncrement;
+                      bestCandidateId = el.id;
+                      bestUpgradeCost = el.nextLevelCost;
+                      bestCandidateNextLevel = el.currentLevel + 1;
+                    }
+                  }
+                });
+              }
               //check if frozen
               let unfreezeTimestamp = improvementData.find(
                 (el) => el.id === bestCandidateId,
